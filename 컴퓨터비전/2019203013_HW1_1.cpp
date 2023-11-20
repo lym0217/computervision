@@ -14,53 +14,53 @@ void main()
 	cin >> x_size >> y_size;
 
 	Mat img_output = Mat::zeros(x_size,y_size,img_input.type());
-	double x_rate = (double)x_size / (double)img_input.cols; // xÃà ºñÀ²
-	double y_rate = (double)y_size / (double)img_input.rows; // yÃà ºñÀ²
+	double x_rate = (double)x_size / (double)img_input.cols; // xì¶• ë¹„ìœ¨
+	double y_rate = (double)y_size / (double)img_input.rows; // yì¶• ë¹„ìœ¨
 
 	for (int i = 0; i < img_input.rows; i++) {
 		for (int j = 0; j < img_input.cols; j++) {
-			img_output.at<uchar>(i * y_rate, j * x_rate) = img_input.at<uchar>(i, j); //Ãâ·Â ÆÄÀÏ¿¡ ÀÔ·Â ÆÄÀÏ ºñÀ²¿¡ ¸ÂÃç¼­ ÀÔ·Â
+			img_output.at<uchar>(i * y_rate, j * x_rate) = img_input.at<uchar>(i, j); //ì¶œë ¥ íŒŒì¼ì— ì…ë ¥ íŒŒì¼ ë¹„ìœ¨ì— ë§ì¶°ì„œ ì…ë ¥
 		}
 	}
 
-	Mat img_rate = img_output.clone(); // ºñÀ²¿¡ ¸Â°Ô ´ëÄª ½ÃÅ² ¿øº» ÆÄÀÏÀ» Ã£±â À§ÇØ »ı¼º
+	Mat img_rate = img_output.clone(); // ë¹„ìœ¨ì— ë§ê²Œ ëŒ€ì¹­ ì‹œí‚¨ ì›ë³¸ íŒŒì¼ì„ ì°¾ê¸° ìœ„í•´ ìƒì„±
 
 	for (int i = 0; i < img_output.rows; i++) {
 		for (int j = 0; j < img_output.cols; j++) {
-			if (img_rate.at<uchar>(i, j) != 0) { // ÇÈ¼¿ °ªÀÌ µé¾îÀÖ´Â °Í(¿øº» ÆÄÀÏÀÇ ÇÈ¼¿ °ªÀÌ µé¾î ÀÖ´Â ÀÚ¸®)¸¸ ¼±ÅÃ
+			if (img_rate.at<uchar>(i, j) != 0) { // í”½ì…€ ê°’ì´ ë“¤ì–´ìˆëŠ” ê²ƒ(ì›ë³¸ íŒŒì¼ì˜ í”½ì…€ ê°’ì´ ë“¤ì–´ ìˆëŠ” ìë¦¬)ë§Œ ì„ íƒ
 				int x_point = j, y_point = i;
-				for (int h = i + 1; h < img_output.rows; h++) { // ÇØ´ç ¿­ÀÇ °¡Àå °¡±î¿î ÇÈ¼¿°ª Ã£±â
+				for (int h = i + 1; h < img_output.rows; h++) { // í•´ë‹¹ ì—´ì˜ ê°€ì¥ ê°€ê¹Œìš´ í”½ì…€ê°’ ì°¾ê¸°
 					if (img_rate.at<uchar>(h,j) != 0) {
 						y_point = h;
 						break;
 					}
 				}
-				for (int w = j + 1; w < img_output.cols; w++) { // ÇØ´ç ÇàÀÇ °¡Àå °¡±î¿î ÇÈ¼¿°ª Ã£±â
+				for (int w = j + 1; w < img_output.cols; w++) { // í•´ë‹¹ í–‰ì˜ ê°€ì¥ ê°€ê¹Œìš´ í”½ì…€ê°’ ì°¾ê¸°
 					if (img_rate.at<uchar>(i,w) != 0) {
 						x_point = w;
 						break;
 					}
 				}
-				if (x_point == j) { // bilinear interpolation ÇÒ¶§ ¿À¸¥ÂÊÀÇ ºó °ø°£ »ı±æ ¶§ ¸Å²ãÁÖ´Â ÄÚµå
+				if (x_point == j) { // bilinear interpolation í• ë•Œ ì˜¤ë¥¸ìª½ì˜ ë¹ˆ ê³µê°„ ìƒê¸¸ ë•Œ ë§¤ê¿”ì£¼ëŠ” ì½”ë“œ
 					for (int h = i; h <= y_point; h++) {
 						for (int w = j; w < img_output.cols; w++) {
 							img_output.at<uchar>(h, w) = img_output.at<uchar>(h, j);
 						}
 					}
 				}
-				else if (y_point == i) { // bilinear interpolation ÇÒ¶§ ÇÏ´ÜÀÇ ºó °ø°£ »ı±æ ¶§ ¸Å²ãÁÖ´Â ÄÚµå
+				else if (y_point == i) { // bilinear interpolation í• ë•Œ í•˜ë‹¨ì˜ ë¹ˆ ê³µê°„ ìƒê¸¸ ë•Œ ë§¤ê¿”ì£¼ëŠ” ì½”ë“œ
 					for (int h = i; h < img_output.rows; h++) {
 						for (int w = j; w <=x_point; w++) {
 							img_output.at<uchar>(h, w) = img_output.at<uchar>(i, w);
 						}
 					}
 				}
-				else { // bilinear interpolation °è»ê
+				else { // bilinear interpolation ê³„ì‚°
 					for (int h = i; h <= y_point; h++) {
 						for (int w = j; w <= x_point; w++) {
-							if (img_output.at<uchar>(h, w) == 0) { //³× ÁöÁ¡À» ÀÌ¿ëÇÑ »ç°¢ÇüÀ» ±×·ÈÀ» ¶§ ºñ¾îÀÖ´Â °÷ Ã£±â
+							if (img_output.at<uchar>(h, w) == 0) { //ë„¤ ì§€ì ì„ ì´ìš©í•œ ì‚¬ê°í˜•ì„ ê·¸ë ¸ì„ ë•Œ ë¹„ì–´ìˆëŠ” ê³³ ì°¾ê¸°
 								int q1, q2;
-								if (h == i) { //³× ÁöÁ¡À» ÀÌ¿ëÇÑ »ç°¢ÇüÀ» ±×·ÈÀ» ¶§ À§ÂÊ º¯ ºÎºĞ °ø½Ä
+								if (h == i) { //ë„¤ ì§€ì ì„ ì´ìš©í•œ ì‚¬ê°í˜•ì„ ê·¸ë ¸ì„ ë•Œ ìœ„ìª½ ë³€ ë¶€ë¶„ ê³µì‹
 									if (img_output.at<uchar>(i, x_point) > img_output.at<uchar>(i, j)) {
 										img_output.at<uchar>(h, w) = (img_output.at<uchar>(i, x_point) - img_output.at<uchar>(i, j)) * ((double)(w - j) / (double)(x_point - j))+ img_output.at<uchar>(i, j);
 									}
@@ -71,7 +71,7 @@ void main()
 										img_output.at<uchar>(h, w) = img_output.at<uchar>(i, j);
 									}
 								}
-								else if(h == y_point) { //³× ÁöÁ¡À» ÀÌ¿ëÇÑ »ç°¢ÇüÀ» ±×·ÈÀ» ¶§ ¾Æ·¡ÂÊ º¯ ºÎºĞ °ø½Ä
+								else if(h == y_point) { //ë„¤ ì§€ì ì„ ì´ìš©í•œ ì‚¬ê°í˜•ì„ ê·¸ë ¸ì„ ë•Œ ì•„ë˜ìª½ ë³€ ë¶€ë¶„ ê³µì‹
 									if (img_output.at<uchar>(y_point, x_point) > img_output.at<uchar>(y_point, j)) {
 										img_output.at<uchar>(h, w) = (img_output.at<uchar>(y_point, x_point) - img_output.at<uchar>(y_point, j)) * ((double)(w - j) / (double)(x_point - j))+ img_output.at<uchar>(y_point, j);
 									}
@@ -82,7 +82,7 @@ void main()
 										img_output.at<uchar>(h, w) = img_output.at<uchar>(y_point, x_point);
 									}
 								}
-								else if (w == j) { //³× ÁöÁ¡À» ÀÌ¿ëÇÑ »ç°¢ÇüÀ» ±×·ÈÀ» ¶§ ¿ŞÂÊ º¯ ºÎºĞ °ø½Ä
+								else if (w == j) { //ë„¤ ì§€ì ì„ ì´ìš©í•œ ì‚¬ê°í˜•ì„ ê·¸ë ¸ì„ ë•Œ ì™¼ìª½ ë³€ ë¶€ë¶„ ê³µì‹
 									if (img_output.at<uchar>(y_point, j) > img_output.at<uchar>(i, j)) {
 										img_output.at<uchar>(h, w) = (img_output.at<uchar>(y_point, j) - img_output.at<uchar>(i, j)) * ((double)(h - i) / (double)(y_point - i))+ img_output.at<uchar>(i, j);
 									}
@@ -93,7 +93,7 @@ void main()
 										img_output.at<uchar>(h, w) = img_output.at<uchar>(i, j);
 									}
 								}
-								else if (w == x_point) { //³× ÁöÁ¡À» ÀÌ¿ëÇÑ »ç°¢ÇüÀ» ±×·ÈÀ» ¶§ ¿À¸¥ÂÊ º¯ ºÎºĞ °ø½Ä
+								else if (w == x_point) { //ë„¤ ì§€ì ì„ ì´ìš©í•œ ì‚¬ê°í˜•ì„ ê·¸ë ¸ì„ ë•Œ ì˜¤ë¥¸ìª½ ë³€ ë¶€ë¶„ ê³µì‹
 									if (img_output.at<uchar>(y_point, x_point) > img_output.at<uchar>(i, x_point)) {
 										img_output.at<uchar>(h, w) = (img_output.at<uchar>(y_point, x_point) - img_output.at<uchar>(i, x_point)) * ((double)(h - i) / (double)(y_point - i))+ img_output.at<uchar>(i, x_point);
 									}
@@ -104,7 +104,7 @@ void main()
 										img_output.at<uchar>(h, w) = img_output.at<uchar>(y_point, x_point);
 									}
 								}
-								else { // À§ ÄÉÀÌ½º¸¦ Á¦¿ÜÇÑ »ç°¢Çü ¾ÈÀÇ ÇÈ¼¿ Ã¤¿ì´Â °ø½Ä
+								else { // ìœ„ ì¼€ì´ìŠ¤ë¥¼ ì œì™¸í•œ ì‚¬ê°í˜• ì•ˆì˜ í”½ì…€ ì±„ìš°ëŠ” ê³µì‹
 									if (img_output.at<uchar>(y_point, x_point) > img_output.at<uchar>(y_point, j)) {
 										q2 = (img_output.at<uchar>(y_point, x_point) - img_output.at<uchar>(y_point, j)) * ((double)(w - j) / (double)(x_point - j)) + img_output.at<uchar>(y_point, j);
 									}
